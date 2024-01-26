@@ -1,0 +1,144 @@
+CREATE TABLE CoopAdvisor{
+    AdvisorID INTEGER,
+    FirstName CHAR(40),
+    LastName CHAR(40)
+    EmailAddress CHAR(40),
+    PhoneNumber CHAR(30),
+    PRIMARY KEY (AdvisorID)
+};
+
+CREATE TABLE Student {
+    StudentID INTEGER,
+    AdvisorID INTEGER NOT NULL,
+    FirstName CHAR(40),
+    LastName CHAR(40),
+    Email CHAR(40),
+    PhoneNumber CHAR(20),
+    CurrentYear INTEGER,
+    NumberofCompletedTerms INTEGER,
+    JobPreferences CHAR(100),
+    PRIMARY KEY (StudentID), 
+    FOREIGN KEY (AdvisorID) REFERENCES CoopAdvisor,
+};
+
+
+CREATE TABLE StudentDocument {
+    DocumentID INTEGER,
+    DocumentName Char(30),
+    UploadDate Date,
+    UploadTime Time,
+    StudentID Char(20) NOT NULL,
+    PRIMARY KEY(DocumentID),
+    FOREIGN KEY (StudentID) REFERENCES Student,
+};
+
+CREATE TABLE Resumé {
+    DocumentID INTEGER,
+    PRIMARY KEY(DocumentID),
+    FOREIGN KEY (DocumentID) REFERENCES StudentDocument,
+};
+
+CREATE TABLE CoverLetter {
+    DocumentID INTEGER,
+    PRIMARY KEY(DocumentID),
+    FOREIGN KEY (DocumentID) REFERENCES StudentDocument,
+};
+
+CREATE TABLE JobContract {
+    DocumentID INTEGER,
+    StudentID CHAR(20),
+    DatePosted Date,
+    TimePosted Time,
+    SalaryOffered INTEGER,
+    PositionOffered Char(20),
+    EmployerID CHAR(20) NOT NULL,
+    PRIMARY KEY(DocumentID),
+    FOREIGN KEY (EmployerID) REFERENCES Employer,
+};
+
+
+CREATE TABLE JobApplication {
+    ApplicationID INTEGER,
+    ApplicationName Char(20),
+    StudentID Char(20) NOT NULL,
+    ResuméDocumentID Char(20) NOT NULL,
+    JobID Char(20) NOT NULL,
+    ApplicationDate Date,
+    JobApplicationStatus CHAR(20) SET DEFAULT('Pending'),
+    PRIMARY KEY (ApplicationID),
+    FOREIGN KEY (StudentID) REFERENCES Student,
+    FOREIGN KEY (ResuméDocumentID) REFERENCES Resumé(DocumentID),
+    FOREIGN KEY (JobID) REFERENCES Job, 
+}; 
+
+
+CREATE TABLE Job {
+    JobID INTEGER,
+    EmployerID INTEGER NOT NULL,
+    StartDate Date,
+    Title CHAR(50),
+    JobDescription CHAR(400),
+    PositionLength CHAR(50),
+    DesiredProgram CHAR(50),
+    Salary CHAR(50),
+    PRIMARY KEY (JobID),
+    FOREIGN KEY (EmployerID) REFERENCES Employer,
+};
+
+CREATE TABLE Employer {
+    EmployerID INTEGER,
+    EmployerName CHAR(50),
+    Website Char(50),
+    HeadQuarterLocation Char(20),
+    PRIMARY KEY (EmployerID)
+
+};
+
+CREATE TABLE CompanyContact {
+    FirstName CHAR(40),
+    LastName CHAR(40),
+    PhoneNumber CHAR(40),
+    EmailAddress CHAR(40),
+    EmployerID INTEGER,
+
+    PRIMARY KEY(CompanyContactName,EmployerID)
+    FOREIGN KEY(EmployerID) REFERENCES Employer ON DELETE CASCADE,
+};
+
+CREATE TABLE AppContainsCoverLetter {
+    ApplicationID INTEGER,
+    DocumentID INTEGER,
+
+    PRIMARY KEY (ApplicationID, DocumentID),
+    FOREIGN KEY (ApplicationID) REFERENCES JobApplication,
+    FOREIGN KEY (DocumentID) REFERENCES CoverLetter,
+
+}
+
+
+CREATE TABLE StudentGetsJob {
+    StudentID INTEGER,
+    JobID INTEGER,
+    AcceptanceDate Date,
+    AcceptanceTime Time,
+
+    PRIMARY KEY (StudentID, JobID)
+    FOREIGN KEY (StudentID) REFERENCES Student,
+    FOREIGN KEY (JobID) REFERENCES Job,
+}
+
+CREATE TABLE StudentInterviewJobwCompanyContact {
+    StudentID INTEGER,
+    JobID INTEGER,
+    CompanyContactFirstName Char(40),
+    CompanyContactLastName Char(40)
+    EmployerID INTEGER,
+    InterviewTime Time,
+    InterviewDate Date,
+    InterviewLocation CHAR(50),
+
+    PRIMARY KEY (StudentID, JobID, CompanyContactFirstName, CompanyContactLastName, EmployerID),
+    FOREIGN KEY (JobID) REFERENCES Job,
+    FOREIGN KEY (StudentID) REFERENCES Student,
+    FOREIGN KEY (CompanyContactFirstName, CompanyContactLastName, EmployerID) REFERENCES CompanyContact(FirstName, LastName, EmployerID),
+}
