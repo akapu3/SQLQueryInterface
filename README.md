@@ -13,3 +13,6 @@
   -   Aggregation with Group By
   -   Division
 - We connected the front end using GET and POST requests. 
+
+
+- The code can be found in index.php
